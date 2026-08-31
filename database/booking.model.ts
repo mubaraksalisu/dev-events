@@ -42,6 +42,12 @@ bookingSchema.index({ eventId: 1, createdAt: -1 });
 // Speed up user booking lookups by email.
 bookingSchema.index({ email: 1 });
 
+// Ensure that a user cannot book the same event multiple times with the same email.
+bookingSchema.index(
+  { eventId: 1, email: 1 },
+  { unique: true, name: "unique_event_email" },
+);
+
 // Before saving, ensure the related event actually exists to prevent orphan bookings.
 bookingSchema.pre("save", async function () {
   const eventExists = await Event.exists({ _id: this.eventId });
